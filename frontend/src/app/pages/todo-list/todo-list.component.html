@@ -1,0 +1,72 @@
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6">My Todo List</h1>
+  
+  <!-- Filter Controls -->
+  <div class="flex space-x-4 mb-6">
+    @for (status of ['all', 'active', 'completed']; track status) {
+      <button 
+        [class.bg-blue-500]="filterStatus() === status"
+        [class.text-white]="filterStatus() === status"
+        class="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition"
+        (click)="setFilter(status)">
+        {{ status | titlecase }}
+      </button>
+    }
+  </div>
+  
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading todos...</p>
+    </div>
+  }
+  
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      {{ error() }}
+      <button (click)="loadTodos()" class="ml-4 text-blue-600 hover:underline">Retry</button>
+    </div>
+  }
+  
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredTodos().length === 0) {
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No todos found</h3>
+      <p class="mt-1 text-gray-500">Get started by creating a new todo</p>
+    </div>
+  }
+  
+  <!-- Show All List -->
+  @if (!loading() && filteredTodos().length > 0) {
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <ul class="divide-y divide-gray-200">
+        @for (todo of filteredTodos(); track todo.id) {
+          <li>
+            <app-todo-item 
+              [todo]="todo" 
+              (delete)="handleDelete($event)"
+              (statusChange)="handleStatusChange(todo.id, $event)">
+            </app-todo-item>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+  
+  <!-- Add New Button -->
+  <div class="mt-6">
+    <a 
+      routerLink="/new" 
+      class="flex items-center justify-center w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+      <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      </svg>
+      Add New Todo
+    </a>
+  </div>
+</div>
