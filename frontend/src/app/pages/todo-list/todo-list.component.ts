@@ -1,8 +1,8 @@
 import { Component,computed,inject,signal  } from '@angular/core';
 import { TodoService } from '../../services/todo.service';
-// import { NotificationService } from '../../services/notification.service';
+import { NotificationService } from '../../services/notification.service';
 import { Todo, TodoFilterStatus } from '../../interfaces/todo.interface';
-import { AsyncPipe, DatePipe,TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TodoItemComponent } from '../todo-item/todo-item.component';
 
@@ -10,12 +10,12 @@ import { TodoItemComponent } from '../todo-item/todo-item.component';
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [AsyncPipe, DatePipe, RouterLink,TitleCasePipe, TodoItemComponent],
+  imports: [RouterLink,TitleCasePipe, TodoItemComponent],
   templateUrl: './todo-list.component.html',
 })
 export class TodoListComponent {
   private readonly todoService = inject(TodoService);
-  // private notification = inject(NotificationService);
+  private readonly notification = inject(NotificationService);
 
   todos = signal<Todo[]>([]);
   loading = signal(false);
@@ -36,7 +36,7 @@ export class TodoListComponent {
       },
       error: (err) => {
         this.error.set('Failed to load todos. Please try again later.');
-        // this.notification.showError(this.error()!);
+        this.notification.showError(this.error()!);
       },
       complete: () => {
         this.loading.set(false);
@@ -48,9 +48,9 @@ export class TodoListComponent {
     this.todoService.deleteTodo(id).subscribe({
       next: () => {
         this.todos.update(todos => todos.filter(t => t.id !== id));
-        // this.notification.showSuccess('Todo deleted successfully');
+        this.notification.showSuccess('Todo deleted successfully');
       },
-      // error: () => this.notification.showError('Failed to delete todo')
+      error: () => this.notification.showError('Failed to delete todo')
     });
   }
 
@@ -71,9 +71,9 @@ export class TodoListComponent {
           todos.map(t => t.id === id ? updatedTodo : t)
         );
         const action = completed ? 'completed' : 'marked as active';
-        // this.notification.showSuccess(`Todo ${action} successfully`);
+        this.notification.showSuccess(`Todo ${action} successfully`);
       },
-      // error: () => this.notification.showError('Failed to update todo status')
+      error: () => this.notification.showError('Failed to update todo status')
     });
   }
 

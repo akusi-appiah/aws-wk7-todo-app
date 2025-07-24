@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TodoService } from '../../services/todo.service';
-// import { NotificationService } from '../../services/notification.service';
+import { NotificationService } from '../../services/notification.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Todo } from '../../interfaces/todo.interface';
 
@@ -14,7 +14,7 @@ import { Todo } from '../../interfaces/todo.interface';
 export class TodoFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly todoService = inject(TodoService);
-  // private notification = inject(NotificationService);
+  private readonly notification = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -57,11 +57,11 @@ export class TodoFormComponent {
     operation.subscribe({
       next: () => {
         const action = this.isEdit() ? 'updated' : 'created';
-        // this.notification.showSuccess(`Todo ${action} successfully`);
+        this.notification.showSuccess(`Todo ${action} successfully`);
         this.router.navigate(['/']);
       },
       error: () => {
-        // this.notification.showError(`Failed to ${this.isEdit ? 'update' : 'create'} todo`);
+        this.notification.showError(`Failed to ${this.isEdit() ? 'update' : 'create'} todo`);
       },
       complete: () => {
         this.loading.set(false);
