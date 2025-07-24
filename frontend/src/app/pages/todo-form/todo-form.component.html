@@ -1,1 +1,121 @@
-<p>todo-form works!</p>
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6">
+    {{ isEdit() ? 'Edit Todo' : 'Create New Todo' }}
+  </h1>
+  
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+      <p class="mt-4 text-gray-600">
+        {{ isEdit() ? 'Loading todo details...' : 'Creating todo...' }}
+      </p>
+    </div>
+  }
+  
+  <!-- Form -->
+  @if (!loading()) {
+    <form [formGroup]="todoForm" (ngSubmit)="onSubmit()" class="bg-white shadow rounded-lg p-6">
+      <!-- Title -->
+      <div class="mb-6">
+        <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+          Title *
+        </label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          placeholder="What needs to be done?"
+        >
+        @if (todoForm.controls.title.invalid && todoForm.controls.title.touched) {
+          <div class="mt-1 text-red-600 text-sm">
+            @if (todoForm.controls.title.errors?.['required']) {
+              <p>Title is required</p>
+            }
+            @if (todoForm.controls.title.errors?.['minlength']) {
+              <p>Title must be at least 3 characters</p>
+            }
+          </div>
+        }
+      </div>
+      
+      <!-- Description -->
+      <div class="mb-6">
+        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+          Description
+        </label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Add details..."
+        ></textarea>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Due Date -->
+        <div>
+          <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-1">
+            Due Date
+          </label>
+          <input
+            id="dueDate"
+            type="date"
+            formControlName="dueDate"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+        </div>
+        
+        <!-- Priority -->
+        <div>
+          <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">
+            Priority
+          </label>
+          <select
+            id="priority"
+            formControlName="priority"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Completed Status -->
+      <div class="mb-6 flex items-center">
+        <input
+          id="completed"
+          type="checkbox"
+          formControlName="completed"
+          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        >
+        <label for="completed" class="ml-2 block text-sm text-gray-700">
+          Mark as completed
+        </label>
+      </div>
+      
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          routerLink="/"
+          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="todoForm.invalid || loading()"
+          [class.opacity-50]="todoForm.invalid || loading()"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          {{ isEdit() ? 'Update Todo' : 'Create Todo' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

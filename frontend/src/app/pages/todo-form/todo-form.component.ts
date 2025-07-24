@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TodoService } from '../../services/todo.service';
 // import { NotificationService } from '../../services/notification.service';
@@ -18,8 +18,8 @@ export class TodoFormComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  isEdit = false;
-  loading = false;
+  isEdit = signal(false);
+  loading = signal(false);
 
   todoForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
@@ -34,11 +34,11 @@ export class TodoFormComponent {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
-        this.isEdit = true;
-        this.loading = true;
+        this.isEdit.set(true);
+        this.loading.set(true);
         this.todoService.getTodoById(id).subscribe(todo => {
           this.todoForm.patchValue(todo);
-          this.loading = false;
+          this.loading.set(false);
         });
       }
     })
@@ -47,18 +47,16 @@ export class TodoFormComponent {
 
   onSubmit() {
     if (this.todoForm.invalid) return;
-
-    this.loading = true;
+    this.loading.set(true);
     const formValue = this.todoForm.value;
     
-    const operation = this.isEdit
+    const operation = this.isEdit()
       ? this.todoService.updateTodo(this.route.snapshot.params['id'], formValue as Partial<Todo>)
       : this.todoService.createTodo(formValue as Partial<Todo>);
 
-
     operation.subscribe({
       next: () => {
-        const action = this.isEdit ? 'updated' : 'created';
+        const action = this.isEdit() ? 'updated' : 'created';
         // this.notification.showSuccess(`Todo ${action} successfully`);
         this.router.navigate(['/']);
       },
@@ -66,7 +64,7 @@ export class TodoFormComponent {
         // this.notification.showError(`Failed to ${this.isEdit ? 'update' : 'create'} todo`);
       },
       complete: () => {
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
