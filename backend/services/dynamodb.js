@@ -1,25 +1,34 @@
-import { dynamoDB } from '../config/aws.js';
-import { ScanCommand, GetCommand, PutCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
+import { getDynamoDBClient } from '../config/aws.js';
+import { ScanCommand, GetItemCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand } from '@aws-sdk/client-dynamodb';
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
+
 
 const TABLE_NAME = process.env.TODO_TABLE_NAME;
+// Safeguard to ensure TABLE_NAME is defined
+if (!TABLE_NAME) {
+  console.log("Table Name: ",process.env.TODO_TABLE_NAME);
+  throw new Error('TODO_TABLE_NAME environment variable is not set');
+}
+
+const dynamoDBClient = getDynamoDBClient();
 
 export const getAllTodos = async () => {
   const params = {
     TableName: TABLE_NAME,
   };
   
-  const { Items } = await dynamoDB.send(new ScanCommand(params));
-  return Items || [];
+  const { Items } = await dynamoDBClient.send(new ScanCommand(params));
+  return Items ? Items.map(item => unmarshall(item)) : [];
 };
 
 export const getTodoById = async (id) => {
   const params = {
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: marshall({ id }),
   };
   
-  const { Item } = await dynamoDB.send(new GetCommand(params));
-  return Item;
+  const { Item } = await dynamoDBClient.send(new GetItemCommand(params));
+  return Item ? unmarshall(Item) : null;
 };
 
 export const createTodo = async (todo) => {
@@ -32,10 +41,10 @@ export const createTodo = async (todo) => {
   
   const params = {
     TableName: TABLE_NAME,
-    Item: newTodo,
+    Item: marshall(newTodo),
   };
   
-  await dynamoDB.send(new PutCommand(params));
+  await dynamoDBClient.send(new PutItemCommand(params));
   return newTodo;
 };
 
@@ -56,24 +65,40 @@ export const updateTodo = async (id, updates) => {
   
   const params = {
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: marshall({ id }),
     UpdateExpression: `SET ${updateExpression.join(', ')}`,
     ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
+    ExpressionAttributeValues: marshall(expressionAttributeValues),
     ReturnValues: 'ALL_NEW',
   };
   
-  const { Attributes } = await dynamoDB.send(new UpdateCommand(params));
-  return Attributes;
+  const { Attributes } = await dynamoDBClient.send(new UpdateItemCommand(params));
+  return Attributes ? unmarshall(Attributes) : null;
 };
 
 export const deleteTodo = async (id) => {
   const params = {
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: marshall({ id }),
     ReturnValues: 'ALL_OLD',
   };
   
-  const { Attributes } = await dynamoDB.send(new DeleteCommand(params));
-  return Attributes;
+  const { Attributes } = await dynamoDBClient.send(new DeleteItemCommand(params));
+  return Attributes ? unmarshall(Attributes) : null;
+};
+
+export const toggleTodoStatus = async (id, completed) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: marshall({ id }),
+    UpdateExpression: 'SET completed = :completed, updatedAt = :updatedAt',
+    ExpressionAttributeValues: marshall({
+      ':completed': completed,
+      ':updatedAt': new Date().toISOString()
+    }),
+    ReturnValues: 'ALL_NEW',
+  };
+  
+  const { Attributes } = await dynamoDBClient.send(new UpdateItemCommand(params));
+  return Attributes ? unmarshall(Attributes) : null;
 };

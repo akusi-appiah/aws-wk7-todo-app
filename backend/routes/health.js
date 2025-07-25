@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkDatabaseHealth, getSystemStatus } from '../services/health';
+import { checkDatabaseHealth, getSystemStatus } from '../services/health.js';
 
 const router = express.Router();
 

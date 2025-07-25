@@ -1,5 +1,7 @@
-import { dynamoDB } from '../config/aws.js';
+import { getDynamoDBClient } from '../config/aws.js';
 import { DescribeTableCommand } from '@aws-sdk/client-dynamodb';
+
+const dynamoDBClient = getDynamoDBClient();
 
 export const checkDatabaseHealth = async () => {
   try {
@@ -7,7 +9,7 @@ export const checkDatabaseHealth = async () => {
       TableName: process.env.TODO_TABLE_NAME
     });
     
-    const response = await dynamoDB.send(command);
+    const response = await dynamoDBClient.send(command);
     return {
       status: 'UP',
       details: {

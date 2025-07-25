@@ -53,3 +53,16 @@ export const deleteTodo = async (req, res, next) => {
     next(error);
   }
 };
+
+export const toggleTodoStatus = async (req, res, next) => {
+  try {
+    const { completed } = req.body;
+    const updatedTodo = await todoService.toggleTodoStatus(req.params.id, completed);
+    if (!updatedTodo) {
+      return res.status(404).json({ message: 'Todo not found' });
+    }
+    res.json(updatedTodo);
+  } catch (error) {
+    next(error);
+  }
+};
