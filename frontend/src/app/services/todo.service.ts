@@ -5,7 +5,7 @@ import { Todo } from '../interfaces/todo.interface';
 @Injectable({ providedIn: 'root' })
 export class TodoService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${this.getBaseUrl()}/todos`;
+  private readonly apiUrl = `${this.getBaseUrl()}/api/todos`;
 
   private getBaseUrl(): string {
     // Use relative path in production, localhost in development
