@@ -1,8 +1,8 @@
-import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
 
 let dynamoDBClientInstance = null;
 
-export function getDynamoDBClient() {
+function getDynamoDBClient() {
   if (dynamoDBClientInstance) return dynamoDBClientInstance;
   
   const config = {
@@ -27,8 +27,7 @@ export function getDynamoDBClient() {
   return dynamoDBClientInstance;
 }
 
-// Verification function
-export async function verifyAWSCredentials() {
+async function verifyAWSCredentials() {
   try {
     const client = getDynamoDBClient();
     const command = new ListTablesCommand({});
@@ -45,7 +44,6 @@ export async function verifyAWSCredentials() {
     console.error('❌ AWS Credential Verification Failed:');
     console.error('Error Message:', error.message);
     
-    // Detailed troubleshooting
     console.log('\nTroubleshooting Guide:');
     console.log('1. Check .env file for these variables:');
     console.log('   - AWS_REGION');
@@ -62,3 +60,8 @@ export async function verifyAWSCredentials() {
     process.exit(1);
   }
 }
+
+module.exports = {
+  getDynamoDBClient,
+  verifyAWSCredentials
+};

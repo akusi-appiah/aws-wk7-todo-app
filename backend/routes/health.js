@@ -1,5 +1,5 @@
-import express from 'express';
-import { checkDatabaseHealth, getSystemStatus } from '../services/health.js';
+const express=require('express');
+const { checkDatabaseHealth, getSystemStatus } = require('../services/health.js');
 
 const router = express.Router();
 
@@ -21,4 +21,4 @@ router.get('/full', async (req, res) => {
   });
 });
 
-export default router;
+module.exports = router;

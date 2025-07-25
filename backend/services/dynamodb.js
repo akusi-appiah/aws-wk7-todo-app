@@ -1,18 +1,16 @@
-import { getDynamoDBClient } from '../config/aws.js';
-import { ScanCommand, GetItemCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand } from '@aws-sdk/client-dynamodb';
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
-
+const { getDynamoDBClient } = require('../config/aws');
+const { ScanCommand, GetItemCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand } = require('@aws-sdk/client-dynamodb');
+const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
 
 const TABLE_NAME = process.env.TODO_TABLE_NAME;
+const dynamoDBClient = getDynamoDBClient();
+
 // Safeguard to ensure TABLE_NAME is defined
 if (!TABLE_NAME) {
-  console.log("Table Name: ",process.env.TODO_TABLE_NAME);
   throw new Error('TODO_TABLE_NAME environment variable is not set');
 }
 
-const dynamoDBClient = getDynamoDBClient();
-
-export const getAllTodos = async () => {
+const getAllTodos = async () => {
   const params = {
     TableName: TABLE_NAME,
   };
@@ -21,7 +19,7 @@ export const getAllTodos = async () => {
   return Items ? Items.map(item => unmarshall(item)) : [];
 };
 
-export const getTodoById = async (id) => {
+const getTodoById = async (id) => {
   const params = {
     TableName: TABLE_NAME,
     Key: marshall({ id }),
@@ -31,7 +29,7 @@ export const getTodoById = async (id) => {
   return Item ? unmarshall(Item) : null;
 };
 
-export const createTodo = async (todo) => {
+const createTodo = async (todo) => {
   const newTodo = {
     ...todo,
     id: Date.now().toString(),
@@ -48,7 +46,7 @@ export const createTodo = async (todo) => {
   return newTodo;
 };
 
-export const updateTodo = async (id, updates) => {
+const updateTodo = async (id, updates) => {
   const updateExpression = [];
   const expressionAttributeValues = {};
   const expressionAttributeNames = {};
@@ -76,7 +74,7 @@ export const updateTodo = async (id, updates) => {
   return Attributes ? unmarshall(Attributes) : null;
 };
 
-export const deleteTodo = async (id) => {
+const deleteTodo = async (id) => {
   const params = {
     TableName: TABLE_NAME,
     Key: marshall({ id }),
@@ -87,7 +85,7 @@ export const deleteTodo = async (id) => {
   return Attributes ? unmarshall(Attributes) : null;
 };
 
-export const toggleTodoStatus = async (id, completed) => {
+const toggleTodoStatus = async (id, completed) => {
   const params = {
     TableName: TABLE_NAME,
     Key: marshall({ id }),
@@ -101,4 +99,13 @@ export const toggleTodoStatus = async (id, completed) => {
   
   const { Attributes } = await dynamoDBClient.send(new UpdateItemCommand(params));
   return Attributes ? unmarshall(Attributes) : null;
+};
+
+module.exports = {
+  getAllTodos,
+  getTodoById,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  toggleTodoStatus
 };

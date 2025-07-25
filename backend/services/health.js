@@ -1,9 +1,9 @@
-import { getDynamoDBClient } from '../config/aws.js';
-import { DescribeTableCommand } from '@aws-sdk/client-dynamodb';
+const { getDynamoDBClient } = require('../config/aws.js') ;
+const { DescribeTableCommand } = require('@aws-sdk/client-dynamodb');
 
 const dynamoDBClient = getDynamoDBClient();
 
-export const checkDatabaseHealth = async () => {
+const checkDatabaseHealth = async () => {
   try {
     const command = new DescribeTableCommand({
       TableName: process.env.TODO_TABLE_NAME
@@ -28,11 +28,16 @@ export const checkDatabaseHealth = async () => {
   }
 };
 
-export const getSystemStatus = () => {
+const getSystemStatus = () => {
   return {
     memoryUsage: process.memoryUsage(),
     uptime: process.uptime(),
     nodeVersion: process.version,
     environment: process.env.NODE_ENV || 'development',
   };
+};
+
+module.exports = {
+  checkDatabaseHealth,
+  getSystemStatus,
 };

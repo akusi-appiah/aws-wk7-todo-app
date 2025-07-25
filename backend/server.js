@@ -1,19 +1,11 @@
-const dotenv = require('dotenv');
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { verifyAWSCredentials } = require('./config/aws');
 const todoRoutes = require('./routes/todos');
 const healthRoutes = require('./routes/health');
 const errorHandler = require('./middleware/errorHandler');
 const path = require('path');
-
-// MUST BE FIRST: Load environment variables before anything else
-dotenv.config();
-
-// Debug log to verify environment variables
-console.log('TODO_TABLE_NAME:', process.env.TODO_TABLE_NAME);
-
-const __dirname = path.dirname(__filename);
+const { verifyAWSCredentials } = require('./config/aws');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,7 +19,7 @@ app.use(express.json());
 
 // Initialize server asynchronously
 async function init() {
-  await verifyAWSCredentials(); // Async operation
+  await verifyAWSCredentials(); 
 
   // Routes
   app.use('/api/todos', todoRoutes);

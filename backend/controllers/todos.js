@@ -1,6 +1,6 @@
-import * as todoService from '../services/dynamodb.js';
+const  todoService = require('../services/dynamodb.js');
 
-export const getAllTodos = async (req, res, next) => {
+const getAllTodos = async (req, res, next) => {
   try {
     const todos = await todoService.getAllTodos();
     res.json(todos);
@@ -9,7 +9,7 @@ export const getAllTodos = async (req, res, next) => {
   }
 };
 
-export const getTodoById = async (req, res, next) => {
+const getTodoById = async (req, res, next) => {
   try {
     const todo = await todoService.getTodoById(req.params.id);
     if (!todo) {
@@ -21,7 +21,7 @@ export const getTodoById = async (req, res, next) => {
   }
 };
 
-export const createTodo = async (req, res, next) => {
+const createTodo = async (req, res, next) => {
   try {
     const newTodo = await todoService.createTodo(req.body);
     res.status(201).json(newTodo);
@@ -30,7 +30,7 @@ export const createTodo = async (req, res, next) => {
   }
 };
 
-export const updateTodo = async (req, res, next) => {
+const updateTodo = async (req, res, next) => {
   try {
     const updatedTodo = await todoService.updateTodo(req.params.id, req.body);
     if (!updatedTodo) {
@@ -42,7 +42,7 @@ export const updateTodo = async (req, res, next) => {
   }
 };
 
-export const deleteTodo = async (req, res, next) => {
+const deleteTodo = async (req, res, next) => {
   try {
     const deletedTodo = await todoService.deleteTodo(req.params.id);
     if (!deletedTodo) {
@@ -54,7 +54,7 @@ export const deleteTodo = async (req, res, next) => {
   }
 };
 
-export const toggleTodoStatus = async (req, res, next) => {
+const toggleTodoStatus = async (req, res, next) => {
   try {
     const { completed } = req.body;
     const updatedTodo = await todoService.toggleTodoStatus(req.params.id, completed);
@@ -65,4 +65,13 @@ export const toggleTodoStatus = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+module.exports = {
+  getAllTodos,
+  getTodoById,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  toggleTodoStatus
 };
