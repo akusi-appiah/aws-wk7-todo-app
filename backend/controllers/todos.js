@@ -1,4 +1,4 @@
-const  todoService = require('../services/dynamodb.js');
+const  todoService = require('../services/dynamodb');
 
 const getAllTodos = async (req, res, next) => {
   try {

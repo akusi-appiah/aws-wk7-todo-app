@@ -1,5 +1,5 @@
 const express=require('express');
-const { checkDatabaseHealth, getSystemStatus } = require('../services/health.js');
+const { checkDatabaseHealth, getSystemStatus } = require('../services/health');
 
 const router = express.Router();
 
