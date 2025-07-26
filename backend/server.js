@@ -21,17 +21,23 @@ app.use(express.json());
 async function init() {
   await verifyAWSCredentials(); 
 
+  // Production setup
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'public')));
+  }
+
   // Routes
   app.use('/api/todos', todoRoutes);
   app.use('/health', healthRoutes);
 
   // Production setup
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'public')));
-    // app.get('*', (req, res) => {
-    //   res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    // });
-  }
+// SPA fallback for non-API routes in production
+if (process.env.NODE_ENV === 'production') {
+  app.get(/^(?!\/api\/todos|\/health).*/, (req, res) => {
+    console.log(`Serving SPA index.html for path: ${req.path}`);
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
+}
 
   // 404 & Error Handling
   app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
