@@ -17,6 +17,9 @@ COPY backend/ ./
 FROM node:20-alpine
 WORKDIR /app
 
+# Install curl
+RUN apk add --no-cache curl
+
 # Copy backend dependencies and source
 COPY --from=backend-builder /app/backend /app
 
@@ -29,7 +32,7 @@ RUN npm cache clean --force
 # Environment variables
 ENV PORT=3000
 ENV NODE_ENV=production
-ENV TODO_TABLE_NAME=TodoAppTable
+ENV TODO_TABLE_NAME=prod-todo-table
 ENV AWS_REGION=eu-west-1
 
 # Expose port and set user
@@ -37,8 +40,8 @@ EXPOSE 3000
 USER node
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
 
 # Start the server
 CMD ["node", "server.js"]
