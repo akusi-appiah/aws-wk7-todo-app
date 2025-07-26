@@ -11,6 +11,4 @@ router.put('/:id', todoController.updateTodo);
 router.delete('/:id', todoController.deleteTodo);
 router.patch('/:id/status', todoController.toggleTodoStatus);
 
-// router.get('/', (req, res) => res.json({ message: 'Todos' }));
-
 module.exports = router;
