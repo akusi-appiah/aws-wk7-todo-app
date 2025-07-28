@@ -1,4 +1,4 @@
-const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient, ListTablesCommand,DescribeTableCommand } = require('@aws-sdk/client-dynamodb');
 
 let dynamoDBClientInstance = null;
 
