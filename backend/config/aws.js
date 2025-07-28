@@ -34,10 +34,12 @@ function getDynamoDBClient() {
 async function verifyAWSCredentials() {
   try {
     const client = getDynamoDBClient();
-    const command = new ListTablesCommand({});
+    // const command = new ListTablesCommand({});
+    const command = new DescribeTableCommand({ TableName: process.env.TODO_TABLE_NAME });
     const response = await client.send(command);
     
-    console.log('✅ AWS Credentials Valid. Tables:', response.TableNames);
+    // console.log('✅ AWS Credentials Valid. Tables:', response.TableNames);
+    console.log('✅ DynamoDB Table Description:', response.Table.TableName);
     console.log(`🔑 AWS Region: ${process.env.AWS_REGION || 'eu-west-1'}`);
 
     if (process.env.DYNAMODB_ENDPOINT) {
@@ -49,18 +51,7 @@ async function verifyAWSCredentials() {
     console.error('Error Message:', error.message);
     
     console.log('\nTroubleshooting Guide:');
-    // console.log('1. Check .env file for these variables:');
-    // console.log('   - AWS_REGION');
-    // console.log('   - AWS_ACCESS_KEY_ID');
-    // console.log('   - AWS_SECRET_ACCESS_KEY');
-    // console.log('   - DYNAMODB_ENDPOINT (for local development)');
-    
-    // console.log('\n2. Verify local DynamoDB is running:');
-    // console.log('   docker run -p 8000:8000 amazon/dynamodb-local');
-    
-    // console.log('\n3. Test credentials with AWS CLI:');
-    // console.log('   aws sts get-caller-identity');
-    
+    console.log('1. Ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables are set correctly.');
     process.exit(1);
   }
 }
