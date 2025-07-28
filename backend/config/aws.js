@@ -21,6 +21,10 @@ function getDynamoDBClient() {
       config.endpoint = process.env.DYNAMODB_ENDPOINT;
       config.sslEnabled = false;
     }
+  }else {
+    // Explicitly ensure no endpoint is set in production
+    delete config.endpoint;
+    delete config.sslEnabled;
   }
 
   dynamoDBClientInstance = new DynamoDBClient(config);
@@ -45,17 +49,17 @@ async function verifyAWSCredentials() {
     console.error('Error Message:', error.message);
     
     console.log('\nTroubleshooting Guide:');
-    console.log('1. Check .env file for these variables:');
-    console.log('   - AWS_REGION');
-    console.log('   - AWS_ACCESS_KEY_ID');
-    console.log('   - AWS_SECRET_ACCESS_KEY');
-    console.log('   - DYNAMODB_ENDPOINT (for local development)');
+    // console.log('1. Check .env file for these variables:');
+    // console.log('   - AWS_REGION');
+    // console.log('   - AWS_ACCESS_KEY_ID');
+    // console.log('   - AWS_SECRET_ACCESS_KEY');
+    // console.log('   - DYNAMODB_ENDPOINT (for local development)');
     
-    console.log('\n2. Verify local DynamoDB is running:');
-    console.log('   docker run -p 8000:8000 amazon/dynamodb-local');
+    // console.log('\n2. Verify local DynamoDB is running:');
+    // console.log('   docker run -p 8000:8000 amazon/dynamodb-local');
     
-    console.log('\n3. Test credentials with AWS CLI:');
-    console.log('   aws sts get-caller-identity');
+    // console.log('\n3. Test credentials with AWS CLI:');
+    // console.log('   aws sts get-caller-identity');
     
     process.exit(1);
   }
