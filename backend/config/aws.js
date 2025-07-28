@@ -1,4 +1,4 @@
-const { DynamoDBClient, ListTablesCommand,DescribeTableCommand } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient,DescribeTableCommand } = require('@aws-sdk/client-dynamodb');
 
 let dynamoDBClientInstance = null;
 
@@ -34,12 +34,10 @@ function getDynamoDBClient() {
 async function verifyAWSCredentials() {
   try {
     const client = getDynamoDBClient();
-    // const command = new ListTablesCommand({});
     const command = new DescribeTableCommand({ TableName: process.env.TODO_TABLE_NAME });
     const response = await client.send(command);
     
-    // console.log('✅ AWS Credentials Valid. Tables:', response.TableNames);
-    console.log('✅ DynamoDB Table Description:', response.Table.TableName);
+    console.log('✅ AWS Credentials Valid. :', response.Table.TableName);
     console.log(`🔑 AWS Region: ${process.env.AWS_REGION || 'eu-west-1'}`);
 
     if (process.env.DYNAMODB_ENDPOINT) {
